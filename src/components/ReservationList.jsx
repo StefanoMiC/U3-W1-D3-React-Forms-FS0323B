@@ -38,13 +38,11 @@ import Alert from "react-bootstrap/Alert";
 
 class ReservationList extends Component {
   state = {
-    reservations: [],
+    reservations: []
     // inizializzare reservations come array vuoto è un'ottima scelta
     // in quanto rispecchia il tipo di dato che andremo a recuperare
     // e fa in modo che un eventuale .map() nel JSX semplicemente
     // non renderizzi alcun elemento dinamico
-    loading: true,
-    error: false
   };
 
   // quindi quello che ci servirebbe sarebbe un modo per effettuare
