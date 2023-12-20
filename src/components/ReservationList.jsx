@@ -96,7 +96,7 @@ class ReservationList extends Component {
       <Container>
         <Row className="justify-content-center">
           <Col xs={12} md={6}>
-            <h2 className="text-center my-4">Pprenotazioni attuali:</h2>
+            <h2 className="text-center my-4">Prenotazioni attuali:</h2>
             {/* qua inseriamo la lista dinamica */}
             <ListGroup>
               {this.state.reservations.length > 0 ? (
