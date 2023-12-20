@@ -107,7 +107,7 @@ class ReservationList extends Component {
                         {reservation.name} per <strong>{reservation.numberOfPeople}</strong>
                       </span>
                       {/* voglio trasformare la proprietà dateTime della prenotazione in qualcosa di più leggibile*/}
-                      <span>{new Date(reservation.dateTime).toLocaleString()}</span>
+                      <span>{new Date(reservation.dateTime).toLocaleTimeString()}</span>
                     </ListGroup.Item>
                   ))}
                 </>
