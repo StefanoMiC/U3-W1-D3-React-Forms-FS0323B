@@ -10,8 +10,6 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import ListGroup from "react-bootstrap/ListGroup";
-import Spinner from "react-bootstrap/Spinner";
-import Alert from "react-bootstrap/Alert";
 // degli import così selettivi, se eseguiti come prassi, renderanno
 // il bundle della vostra applicazione più leggero nel momento in cui
 // la dovrete deployare online
