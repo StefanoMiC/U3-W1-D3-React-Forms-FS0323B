@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Alert, Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
 // import TestComponent from "./TestComponent";
 
 // proprietà che il server si aspetta di ricevere da noi per ogni prenotazione inviata:
@@ -13,7 +13,7 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 
 class ReservationForm extends Component {
   state = {
-    userName: "StefanoMic",
+    userName: "Stefano Miceli",
     reservation: {
       name: "",
       phone: "",
@@ -21,7 +21,18 @@ class ReservationForm extends Component {
       smoking: false,
       dateTime: "",
       specialRequests: ""
-    }
+    },
+    hasAlert: false,
+    alert: {
+      message: "",
+      status: null,
+      variant: "primary"
+    },
+    isLoading: false
+  };
+
+  handleLoading = loading => {
+    this.setState({ isLoading: loading });
   };
 
   handleChange = (propertyName, propertyValue) => {
@@ -30,6 +41,9 @@ class ReservationForm extends Component {
 
   handleSubmit = async event => {
     event.preventDefault();
+
+    this.handleLoading(true);
+
     try {
       const response = await fetch("https://striveschool-api.herokuapp.com/api/reservation", {
         method: "POST",
@@ -52,10 +66,43 @@ class ReservationForm extends Component {
         });
 
         const newReserv = await response.json();
-        alert("la prenotazione " + newReserv._id + " è stata registrata con successo");
+
+        this.setState({
+          hasAlert: true,
+          alert: {
+            ...this.state.alert,
+            message: "la prenotazione " + newReserv._id + " è stata registrata con successo",
+            status: response.status,
+            variant: "success"
+          }
+        });
+
+        setTimeout(
+          () => this.setState({ hasAlert: false, alert: { message: "", status: null, variant: "primary" } }),
+          2500
+        );
+      } else {
+        // siamo nel caso di errore con uno status >= 400
+
+        // gestiamo l'avviso
+        this.setState({
+          hasAlert: true,
+          alert: {
+            message: "Errore nell'invio dei dati. Status: " + response.status,
+            variant: "danger",
+            status: response.status
+          }
+        });
+        // spegnamo l'avviso
+        setTimeout(
+          () => this.setState({ hasAlert: false, alert: { message: "", status: null, variant: "primary" } }),
+          2500
+        );
       }
     } catch (err) {
       console.log(err);
+    } finally {
+      this.handleLoading(false);
     }
   };
 
@@ -68,6 +115,8 @@ class ReservationForm extends Component {
 
         <Row className="justify-content-center">
           <Col md={8}>
+            {this.state.hasAlert && <Alert variant={this.state.alert.variant}>{this.state.alert.message}</Alert>}
+
             <Form onSubmit={this.handleSubmit}>
               <Form.Group className="mb-3" controlId="formBasicEmail">
                 <Form.Label>Nome</Form.Label>
@@ -88,7 +137,11 @@ class ReservationForm extends Component {
                   type="text"
                   placeholder="+393xxxx"
                   value={this.state.reservation.phone}
-                  onChange={event => this.handleChange("phone", event.target.value)}
+                  onChange={event =>
+                    // // this.setState({ reservation: { ...this.state.reservation, phone: event.target.value } })
+                    this.handleChange("phone", event.target.value)
+                  }
+                  required
                 />
               </Form.Group>
               <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -124,6 +177,7 @@ class ReservationForm extends Component {
                   type="datetime-local"
                   value={this.state.reservation.dateTime}
                   onChange={event => this.handleChange("dateTime", event.target.value)}
+                  required
                 />
               </Form.Group>
 
@@ -141,6 +195,7 @@ class ReservationForm extends Component {
 
               <Button variant="primary" type="submit">
                 Submit
+                {this.state.isLoading && <Spinner animation="border" variant="light" size="sm" className="ms-2" />}
               </Button>
             </Form>
           </Col>
