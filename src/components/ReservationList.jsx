@@ -10,7 +10,6 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import ListGroup from "react-bootstrap/ListGroup";
-import { Alert, Spinner } from "react-bootstrap";
 // degli import così selettivi, se eseguiti come prassi, renderanno
 // il bundle della vostra applicazione più leggero nel momento in cui
 // la dovrete deployare online
@@ -37,13 +36,11 @@ import { Alert, Spinner } from "react-bootstrap";
 
 class ReservationList extends Component {
   state = {
-    reservations: [],
+    reservations: []
     // inizializzare reservations come array vuoto è un'ottima scelta
     // in quanto rispecchia il tipo di dato che andremo a recuperare
     // e fa in modo che un eventuale .map() nel JSX semplicemente
     // non renderizzi alcun elemento dinamico
-    hasError: false,
-    isLoading: true
   };
 
   // quindi quello che ci servirebbe sarebbe un modo per effettuare
@@ -71,19 +68,17 @@ class ReservationList extends Component {
     try {
       let response = await fetch("https://striveschool-api.herokuapp.com/api/reservation");
       if (response.ok) {
-        let reservations = await response.json();
+        let data = await response.json();
         // salvare nello state il nostro array data
-
-        this.setState({ reservations });
-
+        setTimeout(() => {
+          this.setState({
+            reservations: data
+          });
+        }, 500);
         // ogni volta che cambia lo stato, render() viene invocato di nuovo
-      } else {
-        this.setState({ hasError: true });
       }
     } catch (error) {
       console.log(error);
-    } finally {
-      this.setState({ isLoading: false });
     }
   };
   render() {
@@ -97,12 +92,10 @@ class ReservationList extends Component {
       <Container>
         <Row className="justify-content-center">
           <Col xs={12} md={6}>
-            <h2 className="text-center my-4 d-inline-block">Prenotazioni attuali:</h2>
-            {this.state.hasError && <Alert variant="danger">Errore nel caricamento dati</Alert>}
-            {this.state.isLoading && <Spinner animation="border" variant="primary" className="ms-2" />}
+            <h2 className="text-center my-4">Prenotazioni attuali:</h2>
             {/* qua inseriamo la lista dinamica */}
             <ListGroup>
-              {this.state.reservations.length > 0 && !this.state.isLoading && !this.state.hasError && (
+              {this.state.reservations.length > 0 ? (
                 <>
                   {this.state.reservations.map(reservation => (
                     <ListGroup.Item key={reservation._id} className="d-flex justify-content-between">
@@ -114,11 +107,7 @@ class ReservationList extends Component {
                     </ListGroup.Item>
                   ))}
                 </>
-              )}
-              {this.state.reservations.length === 0 && !this.state.hasError && this.state.isLoading && (
-                <Alert variant="info">Caricamento...</Alert>
-              )}
-              {this.state.reservations.length === 0 && !this.state.hasError && !this.state.isLoading && (
+              ) : (
                 <ListGroup.Item>Non ci sono prenotazioni al momento</ListGroup.Item>
               )}
             </ListGroup>
